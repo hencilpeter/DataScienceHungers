@@ -1,0 +1,60 @@
+Regression techniques
+(1) Linear Regression
+    (1.1) Univariate
+    (1.2) Multivariate
+(2) Polynomial regression
+(3) Logistic regression
+     (3.1) Binomial ,
+     (3.2) Multinomial
+     (3.3) Ordinal regression
+(4) Fine-tuning techniques
+(4.1) Outliers and Influential Observations
+(4.2) Robust and Resistant Regression techniques
+(4.3) How to Fit Robust Regression Models
+(5) Linear Models
+   (5.1) Generalized Linear model & its main characteristics
+   (5.2) Describe procedures and tests that can be applied to generalized linear models
+   (5.3) Examples of generalized linear models
+   (5.4) Apply those generalized linear models that can be used when measuring event counts
+(6) The Poisson Model
+    (6.1) Binomial
+    (6.2) Negative Binomial Model
+
+Machine Learning Techniques
+(7)  Decision Trees and its Prediction 
+(8)  Random Forest
+(9)  Support Vector Machine (SVM)
+(10)  Naive Bayes
+(11) K-Nearest Neighbors (KNN)
+(12) K-Means
+(13) Dimensionality Reduction Algorithms
+(14) Gradient Boosting algorithms
+       a.GBM
+       B.XGBoost
+       C.LightGBM
+       D.CatBoost
+(15) Bagging
+(16) PCA / Factor analysis
+(17) Clustering
+(18) Time Series (ARIMA)
+(18.1)What is a time series
+(18.2)Autogressive Models
+(18.3)Moving Average Models
+(18.4)Integrated models
+(18.5)ARMA, ARIMA, SARIMA
+(19) Time Series Analysis & Forecasting
+(20) Time Series Approach
+(20.1) Self-projecting approach (univariate)
+(20.2) Cause-and-effect approach (multivariate)
+(21) Survival analysis.
+  (21.1) ANOVA in regression
+
+Artificial Intelligent/Neural Network
+
+(1) ANN architectures –neural network
+  (1.1) Forward propagation
+  (1.2) Backward propagation
+  (1.3) Examine use of ANN’s for clustering and visualization
+  
+(2) CNN
+(3) RNN   

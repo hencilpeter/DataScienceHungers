@@ -1,0 +1,53 @@
+Statistics Basics for Data Scientists	
+======================================
+(1) Statistical Analysis 	
+(2) Statistics in Data Science	
+    (2.1) Purpose of Analysis  
+	(2.2) Purpose of Prediction	
+(3) Different Data Types	
+  (3.1) Discrete Data  
+  (3.2) Continuous Data	
+(4) Sources of Data 	
+   (4.1) Observational Data 
+   (4.2) Experimental Data 	
+(5) Measurement Scales	
+	(5.1) Nominal  
+	(5.2) Ordinal 
+	(5.3)
+	(5.4) Interval Scale  
+	(5.5) Ratio Scale 
+(6) Divisions in Statistics	
+ (6.1) Descriptive Statistics 
+ (6.2) Inferential Statistics  	
+(7) Exploratory Data Analysis (EDA)       	
+(8) Branches of EDA	
+   (8.1) Measures of Central Tendency 
+   (8.2) Measures of Dispersion 	
+   (8.3) Skewness 
+   (8.4) kurtosis 
+   (8.5) Outlier or anomalies	
+(9) Normality, Skewness and  Kurtosis 	
+(10)Data Science is a Random Variable	
+(11) Divisions in Random Variables	
+  (11.1) Discrete Random Variables 
+  (11.2) Continuous Random Variables	
+(12) Randomness and Root of Probability Distribution  	
+(13) Division in probability Distribution 	
+   (13.1) Discrete probability Distribution	
+   (13.2)Continuous probability Distribution 	
+(14)Sample (and its properties) and Population 	
+(15) Various Errors of Sample and Random Sample 	
+(16) Prescriptive vs Predictive vs Statistical Analysis 	
+(17) Central Limit Theorem 	
+(18)Correlation  and its type	
+(19) Correlation - diluted 	
+  (19.1) Multi co-linearity	
+(20)Limitations of Scatter Over Correlation Coefficient ( r value) 	
+(21) Limitation of Forecasting, Regression and Classification     	
+      Time based => forecasting 	
+      - Pattern Based => Regression	
+      - Logic Based => Classification 	
+(22) Hypothesis Testing	
+  - Null 	
+  - Alternative 	
+  - Errors in Hypothesis	
