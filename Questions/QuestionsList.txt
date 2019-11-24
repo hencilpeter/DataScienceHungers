@@ -1,0 +1,22 @@
+Questions from the Housing Sale Price Prediction Project
+========================================================
+- define hypothesis and ANOVA clearly.
+ - missing steps 
+ - how taking log fixes skewness 
+ - how to fix kurtocis 
+ - should we remove the missing columns in test data from the training dataset at the beining ? 
+ - correlationship - what variabels should we pick? top 10 and bottom 10 ? or similar criteria 
+ -  when target variable is skewed why should we take correlated variables medium value (it says roubust to outliers)?
+ - mean and median (pivot and statement) mixed. is it wrong in blog?
+ -  ANOVA more detail 
+     Does ANOVA can be used for median/mode/etc
+	 what is exact/indepth meaning of significance difference
+	 double in function - why are we appending the saleprice group before feeding the values to anova function? instead directly feed the values?  
+	 disparity computation
+ -  why box plot for categorical variable 
+ - box plot - detect outliers
+ -  why GarageYrBlt columns nan is set to median ? may be numeric value
+ near-zero variance distribution
+ - groupy by usign train ds but assinged to allData
+ - is dataframe implicit conversion in pandas?
+ -  all the reauired charts must be studied
