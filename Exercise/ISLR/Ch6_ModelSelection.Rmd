@@ -1,0 +1,188 @@
+---
+title: "Ch6_ModelSelection"
+date: "2/12/2020"
+output: html_document
+---
+
+```{r}
+library(ISLR)
+summary(Hitters)
+
+```
+
+Salary column has some missing avlues. So remove the missing value rows. 
+
+```{r}
+Hitters= na.omit(Hitters)
+with(Hitters, sum(is.na(Salary)))
+```
+
+#(i) Best subset selection. Look for all the possible subset and gives the best model. 
+
+```{r}
+names(Hitters)
+library(leaps) # for best subset selection 
+regfit.full = regsubsets(Salary~., data = Hitters)
+summary(regfit.full)
+```
+
+By default subset selection returns upto 8 size , let increase the count to 10 for all variables.
+```{r}
+regfit.full = regsubsets(Salary~., data=Hitters, nvmax = 19)
+reg.summary = summary(regfit.full)
+names(Hitters)
+summary(regfit.full)
+names(reg.summary)
+```
+plot Cp component names
+```{r}
+reg.summary$cp
+#Pick the model with the lowest Cp and colour the point.
+which.min(reg.summary$cp)
+plot(reg.summary$cp, xlab='Number of variabels', ylab='cp');points(10,reg.summary$cp[10], pch=20,col="red")
+
+
+```
+
+
+There is a plot method for "regsubsets" object
+```{r}
+
+plot(regfit.full, scale = "Cp") # Cp with the smallest number is good 
+
+```
+
+Print the selected coefficients of 10th model
+```{r}
+coef(regfit.full, 10)
+```
+
+Forward Subset selection
+========================
+We use regsubsets() function but specify method "=forward" option.
+
+```{r}
+regfit.fwd = regsubsets(Salary~., data=Hitters, nvmax=19, method="forward")
+summary(regfit.fwd)
+plot(regfit.fwd,scale = "Cp")
+```
+Model Selection using Validation Set
+===================================
+Make training and Validation set. So, we can choose the best subset model. 
+(used slightly different step than the book.)
+```{r}
+dim(Hitters) # 263 X 20
+set.seed(1)
+train = sample(seq(263), 180, replace = FALSE) # creates 180 number between 1 and 263 i.e. ~70%
+train
+regfit.fwd = regsubsets(Salary~., data = Hitters[train,], nvmax = 19, method = "forward")
+```
+Now make predictions on the observations not used for training. We know that there are 19 models. So we set a vector to record error. 
+
+
+```{r}
+Val.errors = rep(NA, 19)
+x.test = model.matrix(Salary~., data=Hitters[-train,]) # extract test data which are not in training DS
+
+for(i in 1:19){
+  coefi = coef(regfit.fwd, id = i)
+  
+  pred = x.test[,names(coefi)] %*% coefi
+  
+  Val.errors[i] = mean((Hitters$Salary[-train]-pred)^2)
+}
+```
+
+Plot the validation error
+```{r}
+plot(sqrt(Val.errors), ylab="Root MSE", ylim = c(300,400), pch=19, type='b');points(sqrt(regfit.fwd$rss[-1]/180), col="blue", pch=19, type = "b");legend("topright", legend = c("Training", "Validation"), col=c("blue", "black"), pch = 19)
+```
+In the above case, we have written mannual code as we don't have predict method for regsubsets. So below standard function is added.
+
+```{r}
+predict = function(object, newdata, id, ...){
+form = as.formula(object$call[[2]])
+mat = model.matrix(form, newdata)
+coefi = coef(object, id=id)
+mat[,names(coefi)] %*% coefi
+
+}
+```
+
+Model Selection By Cross Validation
+===================================
+10 fold cross validation has been used.
+
+```{r}
+set.seed(10)
+folds = sample(rep(1:10, length=nrow(Hitters)))
+dim(Hitters)
+folds
+table(folds)
+cv.errors =matrix(NA, 10, 19)
+for(k in 1:10){
+  best.fit = regsubsets(Salary~., data=Hitters[folds!= k,], nvmax = 19, method = "forward")
+  for(i in 1:19){
+    pred =predict(best.fit, Hitters[folds==k,], id =i )
+    cv.errors[k, i] = mean((Hitters$Salary[folds==k] - pred)^2)
+  }
+}
+
+rmse.cv =sqrt(apply(cv.errors, 2, mean))
+
+plot(rmse.cv, pch=19, type="b")
+
+```
+Ridge Regression and the Lasso
+==============================
+Use the package "glmnet" & this doen't use the model formula language. So setup "x" and "y".
+
+```{r}
+#install the glmnet package first
+# install.packages('glmnet')
+library(glmnet)
+#separate x and y
+x = model.matrix(Salary~., data=Hitters)
+y=Hitters$Salary
+#Apply Ridge Regression. This is achieved by calling glmet() function with alpha = 0.
+#Ridge regression keeps all the variables in but shrink the coefficient towards 0.
+# i.e RSS + lambda
+
+fit.ridge =glmnet(x,y, alpha=0)
+plot(fit.ridge, xvar = "lambda", label = TRUE)
+cv.ridge = cv.glmnet(x,y,alpha=0)
+plot(cv.ridge)
+```
+
+Lasso Model
+===========
+Similar to Ridge regression but differ in penality 
+For lasso model, glmnet function with default argument "alpha=1" can be used.
+
+```{r}
+fit.lasso = glmnet(x,y)
+plot(fit.lasso, xva="lambda", label = TRUE)
+cv.lasso  = cv.glmnet(x,y)
+plot(cv.lasso)
+coef(cv.lasso)
+```
+
+
+In case, we need to use our earlier train/validation divisionto seleect the "lambda" for the lasso. It's easy.
+
+```{r}
+lasso.tr  = glmnet(x[train,], y[train])
+lasso.tr
+###BELOW THROW ERROR: Hencil to Correct
+#pred = predict(lasso.tr, x[-train,])
+#dim(pred)
+#rmse = sqrt(apply((y[-train]-pred)^2, 2, mean))
+
+#plot(log(lasso.tr$lambda), rmse, type="b", xlab="log(lambda)")
+#lam.best = lasso.tr$lambda[order(rmse)[1]]
+#lam.best
+#coef(lasso.tr, s=lam.best)
+```
+
+
+
