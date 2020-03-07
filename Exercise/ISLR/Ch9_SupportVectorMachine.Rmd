@@ -1,0 +1,115 @@
+---
+title: "Support Vector Machine"
+date: "3/7/2020"
+output: html_document
+---
+
+We have chosen two dimensional data for this experiment for easiness. 
+
+## Linear SVN Classifier
+
+### (i)generate some two dimensional data and make them a line separated. 
+
+Just plot te sample data
+
+```{r}
+set.seed(10111)
+x = matrix(rnorm(40), 20, 2)
+y=rep(c(-1,1), c(10,10))
+x[y==1,] = x[y==1, ] + 1
+plot(x, col=y+3, pch=19)
+
+```
+Loading library e1071 that contains SVM function used. Afterwards compute the fit and where we specify 'cost' parameter as that is te turning parameter.
+
+```{r}
+#install.packages('e1071')
+library(e1071)
+dat = data.frame(x, y = as.factor(y))
+svmfit = svm(y~., data=dat, kernel="linear", cost=10, scale = FALSE)
+print(svmfit)
+plot(svmfit, dat)
+```
+
+Plot function is somewhat crude and plots x2 on te horizontal axis. 
+First we will make a grid of values for x1 and x2. We will write functions to do that as we need to reuse it. 
+It uses handy function "expand.grid" and produces the coordinates "n*n" points on a lattice covering the domain of 'x'. Having made te lattice, use make a prediction at eac point on the lattice. We then plot the lattice, color-added according to the classification. Now we can see te decision boundary. 
+
+Te support points (points on the margin or on the wrong side of the margin) are indexed in the '$index' component of te fit. 
+
+```{r}
+make.grid = function(x, n=75){
+  grange = apply(x, 2, range)
+  grange
+  x1 = seq(from=grange[1,1], to=grange[2,1], length = n)
+  x2 = seq(from=grange[1,2], to=grange[2,2], length = n)
+  expand.grid(X1=x1, X2=x2)
+}
+```
+
+```{r}
+xgrid = make.grid(x)
+ygrid = predict(svmfit, xgrid)
+plot(xgrid, col=c("red", "blue")[as.numeric(ygrid)], pch=20, cex=.2)
+points(x, col=y+3, pch=19)
+points(x[svmfit$index,], pch=5, cex=2)
+```
+
+The SVM function is not too friendly. In that case, we have to do some work to get back the linear coefficients as described in the textbook. Te reason is that this makes only sense for linear kernals (book: Elements of statistical learning)
+
+We extract the linear coefficients and use simple algebra, include te decision boundary and two margins. 
+
+```{r}
+?'rho'
+beta = drop(t(svmfit$coefs) %*% x[svmfit$index,])
+beta0 = svmfit$rho
+plot(xgrid, col=c("red", "blue")[as.numeric(ygrid)], pch=20, cex=.2)
+points(x, col=y+3, pch=19)
+points(x[svmfit$index, ], pch=5, cex=2)
+
+abline(beta0/beta[2], -beta[1]/beta[2])
+
+abline((beta0-1)/beta[2], -beta[1]/beta[2], lty=2 )
+abline((beta0+1)/beta[2], -beta[1]/beta[2], lty=2 )
+```
+
+Non-Linear SVN
+=============
+we will run SVM on some data where a non-linear boundary is called for. We will use mixture data from ESL.
+
+```{r}
+load(url("http://www-stat.stanford.edu/~tibs/ElemStatLearn/datasets/ESL.mixture.rda"))
+names(ESL.mixture)
+rm(x,y)
+attach(ESL.mixture)
+```
+These data are two dimensional. Lets plot them and fit a non-linear SVM using a radial Kernal.
+
+```{r}
+plot(x, col=y+1)
+dat = data.frame(y=factor(y), x)
+fit = svm(factor(y)~., data=dat, scale = FALSE, kernal="radial", cost=5)
+```
+
+Now we are going to create a grid as before and make predictions on teh grid. These grid have the grid points for each variable included in the data frame. 
+
+```{r}
+xgrid = expand.grid(X1=px1, X2=px2)
+ygrid = predict(fit, xgrid)
+plot(xgrid, col=as.numeric(ygrid), pch=20, cex=.2)
+points(x, col=y+1, pch=19)
+```
+Now we go further and have the predict function produce te actual function estimates at each of our grid points. We can include the actual decision boundary on the plot by making use of te contour function. On the data frame is also 'prob', which is teh true probability of class .1 for these data, as the grid points. If we plot its  0.5 contour, that will give us the _Bayes Decision Boundary_, wich is te best one could ever do.
+
+```{r}
+func = predict(fit, xgrid, decision.values = TRUE)
+func = attributes(func)$decision
+xgrid = expand.grid(X1=px1, X2=px2)
+ygrid = predict(fit, xgrid)
+plot(xgrid, col=as.numeric(ygrid), pch=20, cex=.2)
+points(x, col=y+1, pch=19)
+
+contour(px1, px2, matrix(func, 69, 99), levels = 0, add = TRUE)
+contour(px1, px2, matrix(prob, 69,99), levels = 0.5, add = TRUE, col = "blue", lwd = 2)
+```
+
