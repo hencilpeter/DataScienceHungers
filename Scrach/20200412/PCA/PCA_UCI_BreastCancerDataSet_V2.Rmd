@@ -1,0 +1,177 @@
+---
+title: "PCA_"
+author: "Hencil Peter"
+date: "4/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Include Libraries 
+
+```{r}
+#library(devtools)
+
+library(randomForest)
+library(caret)
+library(dplyr)
+#library(corrplot)
+
+
+
+```
+
+
+1. Load the Dataset
+```{r}
+#data set url : http://archive.ics.uci.edu/ml/datasets/breast+cancer+wisconsin+(diagnostic)
+
+wdbc <- read.csv("./data/wdbc.csv", header = F)
+features <- c("radius", "texture", "perimeter", "area", "smoothness", "compactness", "concavity", "concave_points", "symmetry", "fractal_dimension")
+head(wdbc)
+
+
+#paste - concatenate strings 
+names(wdbc) <- c("id", "diagnosis", paste0(features,"_mean"), paste0(features,"_se"), paste0(features,"_worst"))
+head(wdbc)
+dim(wdbc)
+
+
+
+```
+2. Prepare Training / Test DS
+
+```{r}
+# # set dependent ("diagnosis") variable to a factor variable
+wdbc$diagnosis<- as.factor(wdbc$diagnosis)
+trainingIndexes = createDataPartition(wdbc$diagnosis, p=0.60, list=FALSE) 
+trainingDF = wdbc[trainingIndexes,] # Training DS
+testDF = wdbc[-trainingIndexes,] # Test DS
+```
+
+
+3. Train PCA model 
+
+
+
+```{r}
+head(trainingDF)
+trainingDF[,3:32 ]
+compressedDS <- preProcess(trainingDF[,3:32], method = "pca" )
+
+
+```
+
+
+4. Apply PCA model on Train/Test DS 
+```{r}
+testDF
+trainingPCA <- predict(compressedDS, trainingDF[,3:32])
+testPCA <- predict(compressedDS, testDF[,3:32])
+```
+
+
+
+5. Train the model 
+trainingPCA
+```{r}
+
+trainingDF
+trainingPCA
+trainingDFTemp = trainingDF[, -1]
+trainingDFTemp
+#model <- train(trainingDFTemp$diagnosis~., method="rf", data = trainingPCA, trControl =  trainControl(method = "cv", number = 4),   ntree=100, importance=TRUE)
+
+model <- train(trainingDFTemp$diagnosis~., data = trainingPCA, method="rf" , preProcess=c("center", "scale"),
+               tuneGrid = rf_grid, trControl=fitControl,metric="RMSE")
+
+          #     trControl =  trainControl(method = "cv", number = 4),   ntree=100, importance=TRUE)
+
+
+
+fit <- train(ts.t ~ .,
+             data=df.ts,
+             method="rf",
+             preProcess=c("center","scale"),
+             tuneGrid = rf_grid,
+             trControl=fitControl,
+             ntree = 200,
+             metric="RMSE") 
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2. Preprocess the Dataset 
+
+
+3. Apply PCA
+
+```{r}
+wdbc.pr <- prcomp(trainingDF[c(3:32)], center = TRUE, scale = TRUE)
+summary(wdbc.pr)
+
+```
+
+4. Visualize the Dataset
+
+```{r}
+#ggbiplot(wdbc.pr, labels=rownames(wdbc))
+
+biplot(wdbc.pr, choices = c(1,2), scale=1, cex=.5)
+
+```
+Draw Screen plot 
+
+```{r}
+#names(wdbc.pr)
+#dim(wdbc.pr$rotation)
+#ncol(wdbc.pr$rotation)
+
+
+screeplot(wdbc.pr, type = c("lines"),npcs = ncol(wdbc.pr$rotation), col="blue")
+```
+
+```{r}
+#summary(wdbc.pr)
+#
+plot(x=c(1:30), y=cumsum(wdbc.pr$sdev^2 / sum(wdbc.pr$sdev^2)) * 100, ylim = c(0,100),
+     type = c("b"), xlab = "Principal Components", ylab="Proportion of Variance", col="blue")
+points(x=c(1:30), y=wdbc.pr$sdev^2 / sum(wdbc.pr$sdev^2) * 100 , col="green", pch="+", type = "b")
+
+
+```
+
+
+Training the model from selected PCAs
+
+```{r}
+#fix the variance 95%
+
+#so select the first 10 principal components ( cummulative variacne is 95.16%)
+
+trainingPCAs = wdbc.pr$rotation[,1:10]
+trainingPCAs
+trainingPCAsT = t(trainingPCAs)
+trainingPCAsT
+
+```
+
+

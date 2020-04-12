@@ -1,0 +1,105 @@
+---
+title: "PCA_"
+author: "Hencil Peter"
+date: "4/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Include Libraries 
+
+```{r}
+#library(devtools)
+
+library(randomForest)
+library(caret)
+#library(dplyr)
+#library(corrplot)
+
+```
+
+
+1. Load the Dataset
+```{r}
+#data set url : http://archive.ics.uci.edu/ml/datasets/breast+cancer+wisconsin+(diagnostic)
+
+wdbc.data <- read.csv("./data/wdbc.csv", header = F)
+features <- c("radius", "texture", "perimeter", "area", "smoothness", "compactness", "concavity", "concave_points", "symmetry", "fractal_dimension")
+head(wdbc.data)
+#paste - concatenate strings 
+names(wdbc.data) <- c("id", "diagnosis", paste0(features,"_mean"), paste0(features,"_se"), paste0(features,"_worst"))
+head(wdbc.data)
+dim(wdbc.data)
+
+#trainingDF = createDataPartition(wdbc, p=0.6, list=FALSE) 
+#testingDF = wdbc[-trainingDF]
+```
+
+
+2. Preprocess the Dataset 
+
+
+3. Apply PCA
+
+```{r}
+wdbc.pr <- prcomp(wdbc.data[c(3:32)], center = TRUE, scale = TRUE)
+wdbc.pr 
+names(wdbc.pr)
+summary(wdbc.pr)
+
+wdbc.data[1:10,]
+wdbc.data[,-1]
+
+```
+
+4. Visualize the Dataset
+
+```{r}
+#ggbiplot(wdbc.pr, labels=rownames(wdbc))
+
+biplot(wdbc.pr, choices = c(1,2), scale=1, cex=.5)
+
+```
+Draw Screen plot 
+
+```{r}
+#names(wdbc.pr)
+#dim(wdbc.pr$rotation)
+#ncol(wdbc.pr$rotation)
+
+
+screeplot(wdbc.pr, type = c("lines"),npcs = ncol(wdbc.pr$rotation), col="blue")
+```
+
+```{r}
+#summary(wdbc.pr)
+#wdbc.pr$sdev^2
+#sum(wdbc.pr$sdev^2)
+#
+
+plot(x=c(1:ncol(wdbc.pr$rotation)), y=cumsum(wdbc.pr$sdev^2 / ncol(wdbc.pr$rotation)) * 100, ylim = c(1,100),
+     type = c("b"), xlab = "Principal Components", ylab="Proportion of Variance", col="blue")
+points(x=c(1: ncol(wdbc.pr$rotation)), y=wdbc.pr$sdev^2 / ncol(wdbc.pr$rotation) * 100 , col="green", pch="+", type = "b")
+
+
+```
+
+
+Training the model from selected PCAs
+
+```{r}
+#fix the variance 95%
+
+#so select the first 10 principal components ( cummulative variacne is 95.16%)
+
+trainingPCAs = wdbc.pr$rotation[,1:10]
+trainingPCAs
+trainingPCAsT = t(trainingPCAs)
+trainingPCAsT
+
+```
+
+
+
