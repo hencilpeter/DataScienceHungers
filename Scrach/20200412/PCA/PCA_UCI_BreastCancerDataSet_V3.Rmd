@@ -1,0 +1,303 @@
+---
+title: "PCA_"
+author: "Hencil Peter"
+date: "4/11/2020"
+output: html_document
+Code Sample : https://github.com/topepo/caret/issues/521
+              https://rstudio-pubs-static.s3.amazonaws.com/92006_344e916f251146daa0dc49fef94e2104.html
+              https://topepo.github.io/caret/pre-processing.html
+              
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Include Libraries 
+
+```{r}
+#library(devtools)
+
+library(randomForest)
+library(caret)
+library(dplyr)
+#library(corrplot)
+
+
+
+```
+
+
+1. Load the Dataset
+```{r}
+#data set url : http://archive.ics.uci.edu/ml/datasets/breast+cancer+wisconsin+(diagnostic)
+
+wdbc <- read.csv("./data/wdbc.csv", header = F)
+features <- c("radius", "texture", "perimeter", "area", "smoothness", "compactness", "concavity", "concave_points", "symmetry", "fractal_dimension")
+head(wdbc)
+
+
+#paste - concatenate strings 
+names(wdbc) <- c("id", "diagnosis", paste0(features,"_mean"), paste0(features,"_se"), paste0(features,"_worst"))
+head(wdbc)
+dim(wdbc)
+
+
+
+```
+2. Prepare Training / Test DS
+
+```{r}
+# # set dependent ("diagnosis") variable to a factor variable
+#wdbc$diagnosis = as.numeric(wdbc$diagnosis)
+wdbc$diagnosis<- as.factor(wdbc$diagnosis)
+
+trainingIndexes = createDataPartition(wdbc$diagnosis, p=0.60, list=FALSE) 
+trainingDF = wdbc[trainingIndexes,] # Training DS
+testDF = wdbc[-trainingIndexes,] # Test DS
+
+#remove id column as it is not required. 
+trainingDF = select(trainingDF, -id)
+testDF = select(testDF, -id)
+```
+
+
+
+3. Training using PCAs
+```{r}
+
+#Approach 1 - Training using single method 
+#set.seed(13)
+
+model_Approach1 <- train(diagnosis~., data = trainingDF, method ="glm", preProc = "pca")
+result_Approach1 = predict(model_Approach1, testDF)
+confusionMatrix(testDF$diagnosis, result_Approach1)
+
+
+```
+
+```{r}
+#Approach 2 - Training using 3 steps - not working  
+dim(trainingDF)
+head(trainingDF)
+
+temp = trainingDF
+
+
+compressedDS <- preProcess(trainingDF[,2:31], method = "pca" )
+trainingPCA <- predict(compressedDS, trainingDF[,2:31])
+
+head(trainingPCA)
+head(trainingDF)
+selected_Columns <- c("radius_mean", "texture_mean", "perimeter_mean", "area_mean", "smoothness_mean", "compactness_mean", "concavity_mean", "concave_points_mean", "symmetry_mean", "fractal_dimension_mean")
+
+names(trainingPCA) <-selected_Columns
+head(trainingPCA)
+head(trainingDF)
+model_Approach2 <- train(trainingDF$diagnosis~., method="glm", data =trainingPCA)
+
+# convert B to 1 and M to 0 
+trainPC <- data.frame(trainingDF$diagnosis, trainingPCA)
+names(trainPC)[1] <- "diagnosis"
+head(trainPC)
+head(trainingDF)
+
+model_Approach2 <- train(trainingDF$diagnosis~., method="glm", data =trainingDF)
+
+
+
+
+```
+
+
+
+
+
+
+```{r}
+#temp code 
+
+
+compressedDS$numComp
+trainingPCA
+numberOfComponents = compressedDS$numComp
+componentsColumnNames = names(trainingDF)[1: (numberOfComponents+1)]
+componentsColumnNames
+names(trainingDF)
+names(trainingPCA) <- componentsColumnNames
+compressedDS
+head(trainingPCA)
+names(trainingPCA)
+head(trainingDF)
+names(trainingDF)
+#model_Approach2 <- train(trainingDF$diagnosis~., method="glm", data =trainingPCA)
+
+trainPC <- data.frame(trainingDF$diagnosis, trainingPCA)
+head(trainPC)
+names(trainPC) = componentsColumnNames
+model <- train(trainingDF$diagnosis~., method="glm", data =trainPC[,2:11])
+model <- train(trainingDF$diagnosis~., method="glm", data =trainingPCA)
+
+
+trainingPCA
+```
+
+```{r}
+#PCModel <- train(diagnosis~., data = training[,-13], method = "glm", preProcess = "pca")
+#https://github.com/topepo/caret/issues/521
+
+trainingDF
+compressedDS <- preProcess(trainingDF[,2:31], method = "pca" )
+trainingPCA <- predict(compressedDS, trainingDF[,2:31])
+head(trainingDF)
+head(compressedDS)
+head(trainingPCA)
+trainingDF
+selected_Columns <- c("radius_mean", "texture_mean", "perimeter_mean", "area_mean", "smoothness_mean", "compactness_mean", "concavity_mean", "concave_points_mean", "symmetry_mean", "fractal_dimension_mean")
+
+names(trainingPCA) <-selected_Columns
+trainingPCA
+#model <- train(trainingDF$diagnosis~., method="glm", data =trainingDF[,2:31])
+model <- train(trainingDF$diagnosis~., method="glm", data =trainingPCA)
+
+testDF
+dim(testDF)
+result = predict(model, testDF[,3:32])
+confusionMatrix(testDF$diagnosis, result)
+
+
+result2 = predict(PCFit1, testDF[,3:32])
+confusionMatrix(testDF$diagnosis, result2)
+```
+
+
+
+
+3. Train PCA model 
+
+
+
+```{r}
+head(trainingDF)
+trainingDF[,3:32 ]
+compressedDS <- preProcess(trainingDF[,3:32], method = "pca" )
+
+
+```
+
+
+
+
+
+
+4. Apply PCA model on Train/Test DS 
+```{r}
+testDF
+trainingPCA <- predict(compressedDS, trainingDF[,3:32])
+testPCA <- predict(compressedDS, testDF[,3:32])
+```
+
+
+
+5. Train the model 
+trainingPCA
+```{r}
+
+trainingDF
+trainingPCA
+trainingDFTemp = trainingDF[, -1]
+trainingDFTemp
+#model <- train(trainingDFTemp$diagnosis~., method="rf", data = trainingPCA, trControl =  trainControl(method = "cv", number = 4),   ntree=100, importance=TRUE)
+
+model <- train(trainingDFTemp$diagnosis~., data = trainingPCA, method="rf" , preProcess=c("center", "scale"),
+               tuneGrid = rf_grid, trControl=fitControl,metric="RMSE")
+
+          #     trControl =  trainControl(method = "cv", number = 4),   ntree=100, importance=TRUE)
+
+
+
+fit <- train(ts.t ~ .,
+             data=df.ts,
+             method="rf",
+             preProcess=c("center","scale"),
+             tuneGrid = rf_grid,
+             trControl=fitControl,
+             ntree = 200,
+             metric="RMSE") 
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2. Preprocess the Dataset 
+
+
+3. Apply PCA
+
+```{r}
+wdbc.pr <- prcomp(trainingDF[c(3:32)], center = TRUE, scale = TRUE)
+summary(wdbc.pr)
+
+```
+
+4. Visualize the Dataset
+
+```{r}
+#ggbiplot(wdbc.pr, labels=rownames(wdbc))
+
+biplot(wdbc.pr, choices = c(1,2), scale=1, cex=.5)
+
+```
+Draw Screen plot 
+
+```{r}
+#names(wdbc.pr)
+#dim(wdbc.pr$rotation)
+#ncol(wdbc.pr$rotation)
+
+
+screeplot(wdbc.pr, type = c("lines"),npcs = ncol(wdbc.pr$rotation), col="blue")
+```
+
+```{r}
+#summary(wdbc.pr)
+#
+plot(x=c(1:30), y=cumsum(wdbc.pr$sdev^2 / sum(wdbc.pr$sdev^2)) * 100, ylim = c(0,100),
+     type = c("b"), xlab = "Principal Components", ylab="Proportion of Variance", col="blue")
+points(x=c(1:30), y=wdbc.pr$sdev^2 / sum(wdbc.pr$sdev^2) * 100 , col="green", pch="+", type = "b")
+
+
+```
+
+
+Training the model from selected PCAs
+
+```{r}
+#fix the variance 95%
+
+#so select the first 10 principal components ( cummulative variacne is 95.16%)
+
+trainingPCAs = wdbc.pr$rotation[,1:10]
+trainingPCAs
+trainingPCAsT = t(trainingPCAs)
+trainingPCAsT
+
+```
+
+
