@@ -1,0 +1,53 @@
+(1) Measures of Central Tendency
+    (i) Mean (ii) Mode (iii) Mediun 
+(2) Measures of Dispersion 
+    (i) Variance (ii) Standard Deviation 
+(3) Covariance and Correlation 
+    (i) Covariance
+	    - It’s a measure tells how two variables of ordered data are related to one another.  
+		i.e. it tells how random variables in a DS will change together.  
+			- Positive Covariance means two variables are positive related and move in the same direction. 
+			-  Negative Covariance means two variables are inversely related or they move in the opposite directions. 
+			the value of covariance lies between -∞ and +∞.
+	(ii) Correlation
+	   - used to measure variable have different unit of measurement. 
+	   - i.e. researchers can find whether units are increasing or decreasing, but they can't measure the degree to which variables are moving together (as it doesn't use standard unit of measurement). 
+       - the value of correlation lies between -1 and +1.
+(4) Eigen Vector and Eigen Values
+     An eigenvector is a vector whose direction remains unchanged when a linear transformation is applied to it. 
+(5) Confusion Matrix
+	It's a performance measurement evaluation table for machine learning classification problem where output can be two or more classes. It has 4 different combinations of predicted and actual values.
+	True Positive:  You predicted positive and it’s true.   E.g.  ML model predicted that vehicle is a Car and it actually is. 
+	True Negative: You predicted negative and it’s true.  E.g.  ML model predicted that vehicle is not a Car and it actually is not. 
+	False Positive: (Type 1 Error) : You predicted positive and it’s false.  E.g.  ML model predicted that vehicle is a Car but it actually is not. 
+	False Negative: (Type 2 Error) : You predicted negative and it’s false.  E.g.  ML model predicted that vehicle is not a Car but it actually is.
+	
+	Precision: Out of all the predicted positive classes, how many are actually positive.  It should be high as possible.
+       = TP / (TP + FP)
+	Recall: Out of all the positive classes, how many are predicted correctly.
+	   = TP / (TP + FN)
+	Accuracy : Out of all the classes, how much we predicted correctly.  It should be high as possible
+      = (TP + TN) / ( TP + TN + FP + FN)
+    F1-Score: It is difficult to compare two models with low precision and high recall or vice versa. So to make them comparable, we use F-Score. F-score helps to measure Recall and Precision at the same time. It uses Harmonic Mean in place of Arithmetic Mean by punishing the extreme values more.
+       = (2 * Recall * Precision ) / ( Recall + Precision )  	
+(6) AUC - ROC Curve
+AUC -> Area Under The Curve
+ROC -> Receiver Operating Characteristics
+AUC - ROC Curve are being used to measure and  visualize the performance of the multi - class classification model at various thresholds settings.  It is also written as AUROC (Area Under the Receiver Operating Characteristics)
+ROC is a probability curve and AUC represents degree or measure of separability.
+(7) PCA (Principal Component Analysis)
+Principal component analysis (PCA) is a statistical procedure/technique that is used to reduce the dimensionality.
+i.e. It helps to extract the very important features that is essential for the model(and helps to remove the features that are not essential to the model).  It is often used as a dimensionality reduction technique. 
+(8) Regularization
+Regularizations are techniques used to reduce the error by fitting a function appropriately on the given training set and avoid overfitting.
+========================
+Machine Learning 
+****************
+
+Supervised Machine Learning 
+---------------------------
+(1) Support Vector Machine(SVM)
+(2) KNN 
+(3) Decision Tree 
+(4) Random Forest 
+(5) Boosting    
