@@ -40,6 +40,30 @@ Principal component analysis (PCA) is a statistical procedure/technique that is 
 i.e. It helps to extract the very important features that is essential for the model(and helps to remove the features that are not essential to the model).  It is often used as a dimensionality reduction technique. 
 (8) Regularization
 Regularizations are techniques used to reduce the error by fitting a function appropriately on the given training set and avoid overfitting.
+(9) z-score
+	- z-score has been used to calculate the probability of occurring the score in the normal distribution. 
+	- z-score is a way to compare results from a test to "normal" population. i.e. experiment of  survey will have thousands 
+	of possible results and many seems to be meaningless. 
+	- The z-score on the normal distribution curve, ranges from -3 standard deviations  up to +3 standard deviations.  
+	e.g. z value = 1.2 is interpreted as observed value is +1.2 standard deviations away from the mean. 
+(10) 
+(11) Central Limit Theorem 
+	- Mean of the samples' frequencies gives the normal distribution irrespective of the nature of population data.
+	i.e. when the population is not normally distributed, we shall pick samples from the population, compute the 
+	mean of it and plot it in a separate graph. When the number of sampling increases, sample distribution will 
+	approach the normal distribution. 
+	- Suggested sample size >= 30. Suggested number of samples  = infinity (∞)
+	- Approximately correct probability can be computed from the sampling distributions. 
+	- When the size of N increases standard deviation will come close to mean of sample distribution.
+(12) Hypothesis Testing
+      Hypothesis : is a claim that we want to test. 
+      Null Hypothesis - Ho - Currently accepted value for a parameter. 
+      Alternative Hypothesis- Ha - Also called research hypothesis. Involves the claim to be tested.  
+(13) Analysis of variance (ANOVA) is a statistical technique that is used to check if the means of three or
+more groups are significantly different from each other. ANOVA checks the impact of one or more
+factors by comparing the means of different samples.   
+
+
 ========================
 Machine Learning 
 ****************
